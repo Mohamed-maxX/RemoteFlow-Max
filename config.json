@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "autostart_with_windows": true,
+  "trusted_devices": [
+    {
+      "device_id": "rfm_1792612296433_315480",
+      "device_name": "RemoteFlow Mobile",
+      "ip": "192.168.1.7",
+      "first_paired": "2026-10-21 18:53:02",
+      "last_connected": "2026-10-22 02:25:38"
+    },
+    {
+      "device_id": "test_dev",
+      "device_name": "Test_Runner",
+      "ip": "127.0.0.1",
+      "first_paired": "2026-10-21 22:33:09",
+      "last_connected": "2026-10-21 22:36:24"
+    }
+  ],
+  "ports": {
+    "udp_port": 5055,
+    "ws_port": 5056,
+    "discovery_port": 5057,
+    "http_port": 5058
+  },
+  "gui_settings": {
+    "theme": "Dark",
+    "minimize_to_tray_on_close": true,
+    "window_geometry": "900x670"
+  },
+  "auth": {
+    "pin_enabled": false,
+    "saved_pin": ""
+  }
+}

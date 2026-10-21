@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "last_updated": "2026-10-21 22:20:00",
+  "theme": {
+    "active_mode": "cinematicNeon",
+    "primary_color": "#00E5FF",
+    "accent_color": "#7C3AED",
+    "secondary_accent": "#FF6B00",
+    "bg_dark": "#050814",
+    "card_color": "#33101C38",
+    "glow_intensity": 1.0
+  },
+  "touchpad": {
+    "sensitivity": 1.0,
+    "mode": "normal",
+    "scroll_speed": 2.2,
+    "invert_scroll": false,
+    "tap_to_click": true,
+    "haptics_enabled": true,
+    "swap_mouse_buttons": false,
+    "show_scroll_strip": true,
+    "guide_text_main": "لوحة لمس فائقة الدقة 120Hz",
+    "guide_text_sub": "لمسة = كليك شمال • لمستين = كليك يمين • سحب بإصبعين = تمرير"
+  },
+  "button_layout": {
+    "left_button_label": "كليك شمال",
+    "left_button_subtitle": "الأساسي",
+    "right_button_label": "كليك يمين",
+    "right_button_subtitle": "القائمة",
+    "scroll_button_label": "تمرير",
+    "quick_actions": [
+      {
+        "id": "keyboard",
+        "label": "الكيبورد",
+        "icon": "keyboard",
+        "color": "#00E5FF",
+        "visible": true
+      },
+      {
+        "id": "jog",
+        "label": "العجلة",
+        "icon": "album",
+        "color": "#FF6B00",
+        "visible": true
+      },
+      {
+        "id": "settings",
+        "label": "ضبط",
+        "icon": "tune",
+        "color": "#FFFFFF",
+        "visible": true
+      }
+    ]
+  },
+  "macro_deck": {
+    "title": "وحدة التحكم السريعة والماكرو",
+    "buttons": [
+      {
+        "id": "play_pause",
+        "label": "تشغيل / إيقاف",
+        "icon": "play_arrow",
+        "color": "#00E5FF",
+        "action": "media_key",
+        "param": "play_pause"
+      },
+      {
+        "id": "mute",
+        "label": "كتم الصوت",
+        "icon": "volume_off",
+        "color": "#EF4444",
+        "action": "media_key",
+        "param": "mute"
+      },
+      {
+        "id": "vol_up",
+        "label": "رفع الصوت",
+        "icon": "volume_up",
+        "color": "#10B981",
+        "action": "media_key",
+        "param": "vol_up"
+      },
+      {
+        "id": "vol_down",
+        "label": "خفض الصوت",
+        "icon": "volume_down",
+        "color": "#10B981",
+        "action": "media_key",
+        "param": "vol_down"
+      },
+      {
+        "id": "screenshot",
+        "label": "لقطة شاشة",
+        "icon": "camera_alt",
+        "color": "#7C3AED",
+        "action": "hotkey",
+        "param": [
+          "win",
+          "shift",
+          "s"
+        ]
+      },
+      {
+        "id": "lock",
+        "label": "قفل الكمبيوتر",
+        "icon": "lock",
+        "color": "#FF6B00",
+        "action": "system_power",
+        "param": "lock"
+      }
+    ]
+  },
+  "ui_strings": {
+    "app_title": "RemoteFlow Max",
+    "nav_mouse": "الماوس",
+    "nav_audio": "الصوت",
+    "nav_macro": "الماكرو",
+    "nav_files": "الملفات",
+    "nav_game": "الألعاب",
+    "nav_system": "النظام"
+  }
+}

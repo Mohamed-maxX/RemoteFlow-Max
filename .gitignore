@@ -1,0 +1,39 @@
+# Tools and SDKs
+build_tools/
+build/
+dist/
+
+# Flutter & Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+mobile_client/build/
+mobile_client/.dart_tool/
+mobile_client/.packages
+mobile_client/.flutter-plugins
+mobile_client/.flutter-plugins-dependencies
+mobile_client/android/.gradle/
+mobile_client/android/local.properties
+
+# Android & Executable Binaries (Published via GitHub Releases)
+*.apk
+*.aab
+*.exe
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.spec
+venv/
+.env
+
+# Logs
+*.log
+remoteflow_server.log
+
+# IDE & System
+.idea/
+.vscode/
+Thumbs.db

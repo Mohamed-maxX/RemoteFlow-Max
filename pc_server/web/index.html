@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#00E5FF">
+    <title>RemoteFlow Max - الويب الفوري (PWA)</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050814;
+            --bg-card: rgba(16, 28, 56, 0.7);
+            --primary: #00E5FF;
+            --accent: #7C3AED;
+            --secondary: #FF6B00;
+            --emerald: #10B981;
+            --red: #EF4444;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border: rgba(0, 229, 255, 0.2);
+        }
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Cairo', system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 0%, #0F172A 0%, #050814 80%);
+            color: var(--text-main);
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        header {
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(10, 16, 36, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-glyph {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #070B19;
+            font-size: 14px;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+        }
+        .brand-title {
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+        .status-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        .status-pill.connected {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--emerald);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Main Screen Container */
+        main {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .tab-content {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            padding: 10px;
+            height: 100%;
+        }
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* 1. Touchpad Tab */
+        .touchpad-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .dpi-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4px;
+        }
+        .dpi-group {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .dpi-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .dpi-btn.active {
+            background: linear-gradient(135deg, var(--primary), #0284C7);
+            color: #070B19;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+        }
+
+        .touchpad-canvas-wrapper {
+            flex: 1;
+            position: relative;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4);
+            touch-action: none;
+            display: flex;
+            overflow: hidden;
+        }
+        #touchpad {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .touch-hint-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 229, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--primary);
+        }
+        .touch-guide-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .touch-guide-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 3px 10px;
+            border-radius: 10px;
+        }
+
+        /* Right Scroll Strip */
+        .scroll-strip {
+            width: 44px;
+            background: rgba(0, 229, 255, 0.04);
+            border-right: 1px solid rgba(0, 229, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            touch-action: none;
+        }
+        .scroll-strip-title {
+            writing-mode: vertical-rl;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+
+        /* Hardware Click Deck */
+        .click-deck {
+            display: flex;
+            gap: 8px;
+            height: 60px;
+            direction: ltr; /* Fixed Physical LTR */
+        }
+        .click-btn {
+            flex: 5;
+            background: rgba(16, 28, 56, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        .click-btn:active {
+            transform: scale(0.97);
+            background: rgba(0, 229, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
+        }
+        .click-btn.middle {
+            flex: 3;
+            border-color: rgba(255, 107, 0, 0.3);
+        }
+        .click-btn.middle:active {
+            background: rgba(255, 107, 0, 0.2);
+            border-color: var(--secondary);
+            box-shadow: 0 0 16px rgba(255, 107, 0, 0.4);
+        }
+        .click-title { font-size: 12px; font-weight: 700; }
+        .click-sub { font-size: 9px; color: var(--text-muted); }
+
+        /* 2. Audio Mixer Tab */
+        .audio-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 8px 0;
+            overflow-y: auto;
+        }
+        .card-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        input[type=range] {
+            flex: 1;
+            accent-color: var(--primary);
+            height: 6px;
+            border-radius: 3px;
+        }
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .media-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 14px 6px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .media-btn:active {
+            background: rgba(0, 229, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        /* 3. Stream Deck & Macros */
+        .macro-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+        .macro-tile {
+            aspect-ratio: 1;
+            background: rgba(16, 28, 56, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .macro-tile:active {
+            transform: scale(0.95);
+            background: rgba(0, 229, 255, 0.25);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
+        }
+        .macro-icon { font-size: 24px; }
+        .macro-name { font-size: 11px; font-weight: 700; text-align: center; }
+
+        /* Bottom Floating Navbar */
+        nav {
+            padding: 6px 14px 10px;
+            background: rgba(10, 16, 36, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            z-index: 50;
+        }
+        .nav-item {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(0, 229, 255, 0.1);
+        }
+        .nav-icon { font-size: 18px; }
+
+        /* Floating PWA Install & OTA Banner */
+        #pwa-banner {
+            position: fixed;
+            top: 54px;
+            left: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(124, 58, 237, 0.2));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 10px 14px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .pwa-txt { font-size: 11px; font-weight: 700; color: #fff; }
+        .pwa-btn {
+            background: var(--primary);
+            color: #070B19;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="logo-glyph">⚡</div>
+            <div class="brand-title">RemoteFlow Max</div>
+        </div>
+        <div id="statusPill" class="status-pill">
+            <span id="statusDot">●</span>
+            <span id="statusText">جاري الاتصال...</span>
+        </div>
+    </header>
+
+    <!-- Floating PWA Prompt -->
+    <div id="pwa-banner">
+        <div class="pwa-txt">📲 ثبت التطبيق على شاشتك الرئيسية فوراً بدون APK</div>
+        <button id="pwaInstallBtn" class="pwa-btn">تثبيت</button>
+    </div>
+
+    <!-- Main Screens -->
+    <main>
+        <!-- Tab 1: Touchpad -->
+        <div id="tab-touchpad" class="tab-content active">
+            <div class="touchpad-container">
+                <div class="dpi-bar">
+                    <div class="dpi-group">
+                        <button class="dpi-btn" onclick="setDpi('sniper', 0.25)">دقيق 0.25x</button>
+                        <button class="dpi-btn active" onclick="setDpi('normal', 1.0)">عادي 1.0x</button>
+                        <button class="dpi-btn" onclick="setDpi('fast', 2.0)">سريع 2.0x</button>
+                    </div>
+                    <div style="font-size: 11px; color: var(--primary); font-weight: 700;">120Hz Touch Engine</div>
+                </div>
+
+                <div class="touchpad-canvas-wrapper">
+                    <div id="touchpad">
+                        <div class="touch-hint-icon">👆</div>
+                        <div id="guideTitle" class="touch-guide-title">لوحة لمس فائقة الدقة 120Hz</div>
+                        <div id="guideSub" class="touch-guide-sub">لمسة = كليك شمال • لمستين = كليك يمين • سحب بإصبعين = تمرير</div>
+                    </div>
+                    <div id="scrollStrip" class="scroll-strip">
+                        <span style="font-size: 12px;">▲</span>
+                        <span class="scroll-strip-title">SCROLL</span>
+                        <span style="font-size: 12px;">▼</span>
+                    </div>
+                </div>
+
+                <div class="click-deck">
+                    <button class="click-btn" onpointerdown="sendClick('left', 'down')" onpointerup="sendClick('left', 'up')">
+                        <span class="click-title">كليك شمال</span>
+                        <span class="click-sub">الأساسي</span>
+                    </button>
+                    <button class="click-btn middle" onclick="sendScroll(20)">
+                        <span class="click-title" style="color: var(--secondary);">تمرير</span>
+                        <span class="click-sub">سكرول</span>
+                    </button>
+                    <button class="click-btn" onpointerdown="sendClick('right', 'down')" onpointerup="sendClick('right', 'up')">
+                        <span class="click-title">كليك يمين</span>
+                        <span class="click-sub">القائمة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Audio & Media -->
+        <div id="tab-audio" class="tab-content">
+            <div class="audio-container">
+                <div class="card-box">
+                    <div class="card-title">🔊 مستوى الصوت الرئيسي للكمبيوتر</div>
+                    <div class="slider-row">
+                        <span>🔈</span>
+                        <input id="volSlider" type="range" min="0" max="100" value="50" oninput="onVolumeChange(this.value)">
+                        <span id="volVal">50%</span>
+                    </div>
+                </div>
+
+                <div class="card-box">
+                    <div class="card-title">🎵 التحكم بالميديا والمشغلات</div>
+                    <div class="media-grid">
+                        <button class="media-btn" onclick="sendMedia('previous')">⏮️<span>السابق</span></button>
+                        <button class="media-btn" onclick="sendMedia('play_pause')">⏯️<span>تشغيل/إيقاف</span></button>
+                        <button class="media-btn" onclick="sendMedia('next')">⏭️<span>التالي</span></button>
+                        <button class="media-btn" onclick="sendMedia('mute')">🔇<span>كتم</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Stream Deck & Macros -->
+        <div id="tab-macro" class="tab-content">
+            <div class="card-title" style="margin-bottom: 8px;">🎛️ أزرار التحكم السريعة والماكرو</div>
+            <div id="macroGrid" class="macro-grid">
+                <!-- Dynamically generated from live_ui_config.json -->
+            </div>
+        </div>
+
+        <!-- Tab 4: System & Power -->
+        <div id="tab-system" class="tab-content">
+            <div class="audio-container">
+                <div class="card-box">
+                    <div class="card-title">⚡ إجراءات الطاقة والنظام</div>
+                    <div class="media-grid">
+                        <button class="media-btn" onclick="sendPower('boss_key')">👁️<span>الهروب (سطح المكتب)</span></button>
+                        <button class="media-btn" onclick="sendPower('lock')">🔒<span>قفل الكمبيوتر</span></button>
+                        <button class="media-btn" onclick="sendPower('sleep')">💤<span>وضع السكون</span></button>
+                        <button class="media-btn" onclick="sendPower('restart')">🔄<span>إعادة التشغيل</span></button>
+                    </div>
+                </div>
+                <div class="card-box" style="text-align: center;">
+                    <div class="card-title" style="justify-content: center;">📲 تطبيق الهاتف المستقل (APK)</div>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">يمكنك أيضاً تحميل ملف الـ APK المباشر على الهاتف إذا رغبت:</p>
+                    <a href="/api/update/latest.apk" download style="display: inline-block; background: var(--primary); color: #070B19; padding: 10px 20px; border-radius: 12px; font-weight: 900; text-decoration: none; font-size: 12px;">تنزيل ملف RemoteFlowMax.apk</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav>
+        <button class="nav-item active" onclick="switchTab('touchpad')">
+            <span class="nav-icon">🖱️</span>
+            <span>الماوس</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('audio')">
+            <span class="nav-icon">🔊</span>
+            <span>الصوت</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('macro')">
+            <span class="nav-icon">🎛️</span>
+            <span>الماكرو</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('system')">
+            <span class="nav-icon">⚡</span>
+            <span>النظام</span>
+        </button>
+    </nav>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(()=>{});
+        }
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwa-banner').style.display = 'flex';
+        });
+        document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const choice = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                document.getElementById('pwa-banner').style.display = 'none';
+            }
+        });
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId)?.classList.add('active');
+            event.currentTarget?.classList.add('active');
+        }
+
+        // Live WebSocket Communication
+        let ws;
+        let sensitivity = 1.0;
+        const host = location.hostname || '127.0.0.1';
+        const wsPort = 5056;
+
+        function connectWS() {
+            try {
+                ws = new WebSocket(`ws://${host}:${wsPort}`);
+                ws.onopen = () => {
+                    const pill = document.getElementById('statusPill');
+                    pill.classList.add('connected');
+                    document.getElementById('statusText').innerText = 'متصل بالكمبيوتر';
+                    // Handshake
+                    ws.send(JSON.stringify({
+                        type: 'handshake',
+                        action: 'connect',
+                        payload: { client_name: 'RemoteFlow PWA Web', is_web: true }
+                    }));
+                };
+                ws.onclose = () => {
+                    const pill = document.getElementById('statusPill');
+                    pill.classList.remove('connected');
+                    document.getElementById('statusText').innerText = 'إعادة الاتصال...';
+                    setTimeout(connectWS, 2000);
+                };
+                ws.onmessage = (evt) => {
+                    try {
+                        const pkt = JSON.parse(evt.data);
+                        handleIncoming(pkt);
+                    } catch (_) {}
+                };
+            } catch (_) {
+                setTimeout(connectWS, 2000);
+            }
+        }
+        connectWS();
+
+        function handleIncoming(pkt) {
+            // Hot-Reload Live UI update
+            if (pkt.type === 'ui' && pkt.action === 'live_update') {
+                const cfg = (pkt.payload && pkt.payload.config) ? pkt.payload.config : pkt.payload;
+                applyLiveUI(cfg);
+            } else if (pkt.type === 'system' && pkt.action === 'new_apk_ready') {
+                console.log("New APK Ready:", pkt.payload);
+            }
+        }
+
+        function applyLiveUI(config) {
+            if (!config) return;
+            if (config.touchpad) {
+                if (config.touchpad.guide_text_main) document.getElementById('guideTitle').innerText = config.touchpad.guide_text_main;
+                if (config.touchpad.guide_text_sub) document.getElementById('guideSub').innerText = config.touchpad.guide_text_sub;
+            }
+            if (config.macro_deck && config.macro_deck.buttons) {
+                renderMacros(config.macro_deck.buttons);
+            }
+        }
+
+        function renderMacros(buttons) {
+            const grid = document.getElementById('macroGrid');
+            grid.innerHTML = '';
+            buttons.forEach(btn => {
+                const tile = document.createElement('div');
+                tile.className = 'macro-tile';
+                tile.innerHTML = `
+                    <div class="macro-icon" style="color: ${btn.color || 'var(--primary)'}">${getGlyph(btn.icon)}</div>
+                    <div class="macro-name">${btn.label}</div>
+                `;
+                tile.onclick = () => {
+                    if (btn.action === 'media_key') sendMedia(btn.param);
+                    else if (btn.action === 'system_power') sendPower(btn.param);
+                    else if (btn.action === 'hotkey') sendHotkey(btn.param);
+                };
+                grid.appendChild(tile);
+            });
+        }
+        function getGlyph(icon) {
+            const map = { play_arrow: '▶️', volume_off: '🔇', volume_up: '🔊', volume_down: '🔉', camera_alt: '📸', lock: '🔒' };
+            return map[icon] || '⚡';
+        }
+
+        // Default initial macros
+        renderMacros([
+            { id: "play", label: "تشغيل / إيقاف", icon: "play_arrow", color: "#00E5FF", action: "media_key", param: "play_pause" },
+            { id: "mute", label: "كتم الصوت", icon: "volume_off", color: "#EF4444", action: "media_key", param: "mute" },
+            { id: "vol_up", label: "رفع الصوت", icon: "volume_up", color: "#10B981", action: "media_key", param: "vol_up" },
+            { id: "vol_down", label: "خفض الصوت", icon: "volume_down", color: "#10B981", action: "media_key", param: "vol_down" },
+            { id: "screenshot", label: "لقطة شاشة", icon: "camera_alt", color: "#7C3AED", action: "hotkey", param: ["win", "shift", "s"] },
+            { id: "lock", label: "قفل الكمبيوتر", icon: "lock", color: "#FF6B00", action: "system_power", param: "lock" }
+        ]);
+
+        function sendMsg(type, action, payload = {}) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type, action, payload, timestamp: Date.now() }));
+            }
+        }
+
+        function setDpi(mode, val) {
+            sensitivity = val;
+            document.querySelectorAll('.dpi-btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function sendClick(btn, state) {
+            sendMsg('mouse', 'click', { button: btn, state: state });
+        }
+        function sendScroll(delta) {
+            sendMsg('mouse', 'scroll', { dy: delta });
+        }
+        function sendMedia(action) {
+            sendMsg('media', 'media_key', { action: action });
+        }
+        function sendPower(action) {
+            sendMsg('power', action, { action: action });
+        }
+        function sendHotkey(keys) {
+            sendMsg('keyboard', 'hotkey', { keys: keys });
+        }
+        function onVolumeChange(val) {
+            document.getElementById('volVal').innerText = val + '%';
+            sendMsg('audio', 'volume_change', { volume: val / 100.0 });
+        }
+
+        // Touchpad Touch Events
+        const pad = document.getElementById('touchpad');
+        let lastTouches = {};
+
+        pad.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            for (let t of e.changedTouches) {
+                lastTouches[t.identifier] = { x: t.clientX, y: t.clientY, startTime: Date.now() };
+            }
+        }, { passive: false });
+
+        pad.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length === 1) {
+                const t = e.touches[0];
+                const prev = lastTouches[t.identifier];
+                if (prev) {
+                    const dx = (t.clientX - prev.x) * sensitivity * 1.5;
+                    const dy = (t.clientY - prev.y) * sensitivity * 1.5;
+                    sendMsg('mouse', 'delta', { dx, dy, mode: 'normal' });
+                    lastTouches[t.identifier].x = t.clientX;
+                    lastTouches[t.identifier].y = t.clientY;
+                }
+            } else if (e.touches.length === 2) {
+                const t0 = e.touches[0];
+                const prev0 = lastTouches[t0.identifier];
+                if (prev0) {
+                    const dy = t0.clientY - prev0.y;
+                    sendScroll(dy * 1.5);
+                    lastTouches[t0.identifier].y = t0.clientY;
+                }
+            }
+        }, { passive: false });
+
+        pad.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            for (let t of e.changedTouches) {
+                const start = lastTouches[t.identifier];
+                if (start && Date.now() - start.startTime < 250) {
+                    if (e.touches.length === 0) sendClick('left', 'click');
+                    else if (e.touches.length === 1) sendClick('right', 'click');
+                }
+                delete lastTouches[t.identifier];
+            }
+        }, { passive: false });
+
+        // Scroll Strip Drag
+        const strip = document.getElementById('scrollStrip');
+        let stripLastY = 0;
+        strip.addEventListener('touchstart', (e) => {
+            stripLastY = e.touches[0].clientY;
+        });
+        strip.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const currY = e.touches[0].clientY;
+            const delta = currY - stripLastY;
+            sendScroll(delta * 2.5);
+            stripLastY = currY;
+        }, { passive: false });
+
+    </script>
+</body>
+</html>
